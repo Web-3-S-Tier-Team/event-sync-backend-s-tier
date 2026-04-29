@@ -1,0 +1,69 @@
+package hei.school.even_sync_backend.repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import hei.school.even_sync_backend.entity.Question;
+
+@Repository
+public class QuestionRepository {
+
+    private Connection connection;
+
+    public QuestionRepository(Connection connection) {
+        this.connection = connection;
+    }
+
+    public void createQuestion(Question q) throws SQLException {
+        String sql = "INSERT INTO questions (contenu, nom, session_id) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, q.getContenu());
+            stmt.setString(2, q.getNom());
+            stmt.setString(3, q.getSessionId());
+            stmt.executeUpdate();
+        }
+    }
+
+    public List<Question> getBySession(String sessionId) throws SQLException {
+
+        List<Question> questions = new ArrayList<>();
+        String sql = "SELECT * FROM questions WHERE session_id = ? ORDER BY upvotes DESC, created_at DESC";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, sessionId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Question q = new Question();
+                q.setId(rs.getString("id"));
+                q.setContenu(rs.getString("contenu"));
+                q.setNom(rs.getString("nom"));
+                q.setUpvotes(rs.getInt("upvotes"));
+                q.setSessionId(rs.getString("session_id"));
+                q.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                questions.add(q);
+            }
+        }
+        return questions;
+    }
+
+    public void upvote(String questionId) throws SQLException {
+        String sql = "UPDATE questions SET upvotes = upvotes + 1 WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, questionId);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void deleteQuestion(String questionId) throws SQLException {
+        String sql = "DELETE FROM questions SET upvotes = upvotes + 1 WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, questionId);
+            stmt.executeUpdate();
+        }
+    }
+}

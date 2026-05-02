@@ -20,12 +20,12 @@ public class QuestionRepository {
         this.connection = connection;
     }
 
-    public void createQuestion(Question q) throws SQLException {
+    public void createQuestion(String idSession, String questionContainer, String userName) throws SQLException {
         String sql = "INSERT INTO questions (contenu, nom, session_id) VALUES (?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, q.getContenu());
-            stmt.setString(2, q.getNom());
-            stmt.setString(3, q.getSessionId());
+            stmt.setString(1, questionContainer);
+            stmt.setString(2, userName);
+            stmt.setString(3, idSession);
             stmt.executeUpdate();
         }
     }

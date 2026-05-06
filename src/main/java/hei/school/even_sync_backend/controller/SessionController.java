@@ -1,4 +1,3 @@
-// hei.school.even_sync_backend/controller/SessionController.java
 package hei.school.even_sync_backend.controller;
 
 import hei.school.even_sync_backend.model.Session;

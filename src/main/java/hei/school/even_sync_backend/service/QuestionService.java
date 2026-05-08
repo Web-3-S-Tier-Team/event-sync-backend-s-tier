@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import hei.school.even_sync_backend.dto.QuestionDTO;
 import hei.school.even_sync_backend.entity.Question;
+import hei.school.even_sync_backend.entity.User;
 import hei.school.even_sync_backend.exception.NotFoundException;
 import hei.school.even_sync_backend.exception.UnauthorizedException;
 import hei.school.even_sync_backend.repository.QuestionRepository;
@@ -20,16 +21,16 @@ public class QuestionService {
         this.questionRepository = questionRepository;
     }
 
-    public List<QuestionDTO> findQuestion (String idSession){
+    public List<QuestionDTO> findQuestion (String sessionId){
         try {
-            if (idSession==null || idSession=="") {
+            if (sessionId==null || sessionId=="") {
                 throw new BadRequestException("The session id must be defined");
             }
             
-            List<Question> listOfQuestions = questionRepository.getBySession(idSession);
+            List<Question> listOfQuestions = questionRepository.getBySession(sessionId);
 
             if (listOfQuestions.isEmpty()) {
-                throw new NotFoundException("No question in session:"+idSession+" has been found");
+                throw new NotFoundException("No question in session:"+sessionId+" has been found");
             }
             return mapToDTO(listOfQuestions);
         } catch (Exception e) {
@@ -38,9 +39,9 @@ public class QuestionService {
 
     }
 
-    public List<QuestionDTO> createQuestion (String idSession,String questionContener,String userName){
+    public List<QuestionDTO> createQuestion (String sessionId,String questionContener,String userName){
         try {
-            if (idSession==null || idSession=="") {
+            if (sessionId==null || sessionId=="") {
                 throw new BadRequestException("The session id must be defined");
             }
             if (questionContener==""||questionContener==null) {
@@ -49,11 +50,11 @@ public class QuestionService {
             if (userName==null||userName=="") {
                 throw new UnauthorizedException("Your user name must be defined");
             }
-            questionRepository.createQuestion(idSession,questionContener,userName);
+            questionRepository.createQuestion(sessionId,questionContener,userName);
             
-            List<Question> listOfQuestions =  questionRepository.getBySession(idSession);
+            List<Question> listOfQuestions =  questionRepository.getBySession(sessionId);
             if (listOfQuestions.isEmpty()) {
-                throw new NotFoundException("No question in session:"+idSession+" has been found");
+                throw new NotFoundException("No question in session:"+sessionId+" has been found");
             }
             return mapToDTO(listOfQuestions);
         } catch (Exception e) {
@@ -61,19 +62,36 @@ public class QuestionService {
         }
     }
 
-    public List<QuestionDTO> addVoteToQuestion (String idSession){
-        throw new RuntimeException("methode not implemented");
+    public List<QuestionDTO> addVoteToQuestion (String sessionId,String questionId, String userId, String userName){
+        try {
+            if (questionRepository.getUserInVoteQuestion(questionId).contains(new User(userId,userName))) {
+                questionRepository.upvote(sessionId, questionId);
+            }else{
+                questionRepository.downvote(sessionId, questionId);
+            }
+            return mapToDTO( questionRepository.getBySession(sessionId));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public List<QuestionDTO> deleteQuestion (String idSession){
-        throw new RuntimeException("methode not implemented");
+    public List<QuestionDTO> deleteQuestion (String sessionId,String questionId, String adminKey){
+        try {
+            if (adminKey==System.getenv("adminKey")) {
+                throw new UnauthorizedException("No access to this methode");
+            }
+            questionRepository.delete(sessionId,questionId);
+            return mapToDTO(questionRepository.getBySession(questionId));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private List<QuestionDTO> mapToDTO (List<Question> listOfQuestions) {
         return listOfQuestions.stream().map(q->new QuestionDTO(
                 q.getNom(),
                 q.getContenu(),
-                q.getUpvotes()))
+                q.getUpvotes().size()))
             .collect(Collectors.toList());
     }
 }

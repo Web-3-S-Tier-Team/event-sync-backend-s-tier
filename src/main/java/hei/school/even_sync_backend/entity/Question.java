@@ -1,19 +1,21 @@
 package hei.school.even_sync_backend.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 
 public class Question {
     private String id;
     private String contenu;
     private String nom;
-    private int upvotes;
+    private List<User> vote;
     private String sessionId;
     private LocalDateTime createdAt;
-    public Question(String id, String contenu, String nom, int upvotes, String sessionId, LocalDateTime createdAt) {
+    public Question(String id, String contenu, String nom, List<User> vote, String sessionId, LocalDateTime createdAt) {
         this.id = id;
         this.contenu = contenu;
         this.nom = nom;
-        this.upvotes = upvotes;
+        this.vote = vote;
         this.sessionId = sessionId;
         this.createdAt = createdAt;
     }
@@ -39,11 +41,11 @@ public class Question {
     public void setNom(String nom) {
         this.nom = nom;
     }
-    public int getUpvotes() {
-        return upvotes;
+    public List<User> getUpvotes() {
+        return vote;
     }
-    public void setUpvotes(int upvotes) {
-        this.upvotes = upvotes;
+    public void setUpvotes(List<User> vote) {
+        this.vote = vote;
     }
     public String getSessionId() {
         return sessionId;

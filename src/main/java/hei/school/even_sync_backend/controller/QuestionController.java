@@ -27,10 +27,10 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
-    @GetMapping("session/{idSession}/questions")
-    public ResponseEntity<?> getQuestions (@PathVariable String idSession) {
+    @GetMapping("session/{sessionId}/questions")
+    public ResponseEntity<?> getQuestions (@PathVariable String sessionId) {
         try {
-            List<QuestionDTO> getQuestionInASession = questionService.findQuestion(idSession);
+            List<QuestionDTO> getQuestionInASession = questionService.findQuestion(sessionId);
             return ResponseEntity.status(HttpStatus.OK)
             .body(getQuestionInASession);
             
@@ -47,10 +47,10 @@ public class QuestionController {
         }
     }
 
-    @PostMapping("session/{idSession}/questions")
-    public ResponseEntity<?> postQuestions (@PathVariable String idSession,@RequestBody String questionContainer, @RequestHeader String userName) {
+    @PostMapping("session/{sessionId}/questions")
+    public ResponseEntity<?> postQuestions (@PathVariable String sessionId,@RequestBody String questionContainer, @RequestHeader String userName) {
         try {
-            List<QuestionDTO> getQuestionInASession = questionService.createQuestion(idSession,questionContainer,userName);
+            List<QuestionDTO> getQuestionInASession = questionService.createQuestion(sessionId,questionContainer,userName);
             return ResponseEntity.status(HttpStatus.CREATED)
             .body(getQuestionInASession);
             
@@ -69,10 +69,10 @@ public class QuestionController {
         }
     }
 
-    @PutMapping("session/{idSession}/questions")
-    public ResponseEntity<?> putQuestions (@PathVariable String idSession) {
+    @PutMapping("session/{sessionId}/questions/{questionId}/addVote")
+    public ResponseEntity<?> putQuestionsAddVote (@PathVariable String sessionId,@PathVariable String questionId,@RequestHeader String userId, @RequestHeader String userName ) {
         try {
-            List<QuestionDTO> getQuestionInASession = questionService.findQuestion(idSession);
+            List<QuestionDTO> getQuestionInASession = questionService.addVoteToQuestion(sessionId, questionId, userId, userName);
             return ResponseEntity.status(HttpStatus.OK)
             .body(getQuestionInASession);
             
@@ -82,10 +82,10 @@ public class QuestionController {
         }
     }
 
-    @DeleteMapping("session/{id}/questions")
-    public ResponseEntity<?> deleteQuestions (@PathVariable String idSession) {
+    @DeleteMapping("session/{sessionId}/questions/{questionId}")
+    public ResponseEntity<?> deleteQuestions (@PathVariable String sessionId ,@PathVariable String questionId ,@RequestHeader String admin_key ) {
         try {
-            List<QuestionDTO> getQuestionInASession = questionService.findQuestion(idSession);
+            List<QuestionDTO> getQuestionInASession = questionService.deleteQuestion(sessionId, questionId, admin_key);
             return ResponseEntity.status(HttpStatus.OK)
             .body(getQuestionInASession);
             

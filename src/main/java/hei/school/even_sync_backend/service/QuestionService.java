@@ -89,11 +89,11 @@ public class QuestionService {
     }
 
     private List<QuestionDTO> mapToDTO(List<Question> listOfQuestions) {
-        return listOfQuestions.stream()
-            .map(q -> new QuestionDTO(
-                q.getNom(),
-                q.getContenu(),
-                q.getUpvotes()))
-            .collect(Collectors.toList());
+        return (List<QuestionDTO>) listOfQuestions.stream()
+                .map(q -> new QuestionDTO(
+                        q.getNom(),
+                        q.getContenu(),
+                        q.getUpvotes() // Supprimez le .size() et le commentaire ici
+                ));
     }
 }

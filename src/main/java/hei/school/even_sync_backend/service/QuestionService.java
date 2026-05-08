@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import hei.school.even_sync_backend.dto.QuestionDTO;
 import hei.school.even_sync_backend.entity.Question;
 import hei.school.even_sync_backend.entity.User;
+import hei.school.even_sync_backend.exception.ForbiddenRequestException;
 import hei.school.even_sync_backend.exception.NotFoundException;
 import hei.school.even_sync_backend.exception.UnauthorizedException;
 import hei.school.even_sync_backend.repository.QuestionRepository;
@@ -16,9 +17,11 @@ import hei.school.even_sync_backend.repository.QuestionRepository;
 @Service
 public class QuestionService {
     QuestionRepository questionRepository;
+    SessionService sessionService;
 
-    public QuestionService(QuestionRepository questionRepository) {
+    public QuestionService(QuestionRepository questionRepository,SessionService sessionService) {
         this.questionRepository = questionRepository;
+        this.sessionService = sessionService;
     }
 
     public List<QuestionDTO> findQuestion (String sessionId){
@@ -39,7 +42,7 @@ public class QuestionService {
 
     }
 
-    public List<QuestionDTO> createQuestion (String sessionId,String questionContener,String userName){
+    public List<QuestionDTO> createQuestion (Long eventId,String sessionId,String questionContener,String userName){
         try {
             if (sessionId==null || sessionId=="") {
                 throw new BadRequestException("The session id must be defined");
@@ -49,6 +52,9 @@ public class QuestionService {
             }
             if (userName==null||userName=="") {
                 throw new UnauthorizedException("Your user name must be defined");
+            }
+            if (sessionService.getSessionsByEventId(eventId).stream().filter(s->s.getId().toString()==sessionId).toList().getFirst().getLiveStatus()!="LIVE") {
+                throw new ForbiddenRequestException("The sesssion is not live");
             }
             questionRepository.createQuestion(sessionId,questionContener,userName);
             

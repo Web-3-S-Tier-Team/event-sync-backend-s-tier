@@ -1,4 +1,3 @@
-
 package hei.school.even_sync_backend;
 
 import hei.school.even_sync_backend.model.*;
@@ -8,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -22,6 +22,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+
         Event event = new Event(
                 null,
                 "Tech Summit 2024",
@@ -32,7 +33,13 @@ public class DataInitializer implements CommandLineRunner {
         );
 
         Room room = new Room(1L, "Salle A");
-        Speaker speaker = new Speaker(1L, "Marie Dupont", "/photo.jpg", "Experte Java");
+
+        Speaker speaker = new Speaker(
+                1L,
+                "Marie Dupont",
+                "/photo.jpg",
+                "Experte Java"
+        );
 
         // Session LIVE
         Session liveSession = new Session(
@@ -41,8 +48,11 @@ public class DataInitializer implements CommandLineRunner {
                 "Les bases du langage Java",
                 LocalDateTime.now().minusMinutes(30),
                 LocalDateTime.now().plusMinutes(60),
+                room.getId(),
+                List.of(speaker.getId()),
                 100
         );
+
         liveSession.setRoom(room);
         liveSession.getSpeakers().add(speaker);
         liveSession.setEvent(event);
@@ -54,8 +64,11 @@ public class DataInitializer implements CommandLineRunner {
                 "Framework Spring Boot",
                 LocalDateTime.now().plusHours(2),
                 LocalDateTime.now().plusHours(4),
+                room.getId(),
+                List.of(speaker.getId()),
                 50
         );
+
         upcomingSession.setRoom(room);
         upcomingSession.getSpeakers().add(speaker);
         upcomingSession.setEvent(event);
@@ -67,8 +80,11 @@ public class DataInitializer implements CommandLineRunner {
                 "Mot de bienvenue",
                 LocalDateTime.now().minusHours(3),
                 LocalDateTime.now().minusHours(2),
+                room.getId(),
+                List.of(speaker.getId()),
                 200
         );
+
         endedSession.setRoom(room);
         endedSession.getSpeakers().add(speaker);
         endedSession.setEvent(event);
@@ -78,6 +94,7 @@ public class DataInitializer implements CommandLineRunner {
         event.getSessions().add(endedSession);
 
         eventRepository.save(event);
+
         sessionRepository.save(liveSession);
         sessionRepository.save(upcomingSession);
         sessionRepository.save(endedSession);

@@ -30,6 +30,13 @@ public class SessionRepositoryImpl implements SessionRepository {
     }
 
     @Override
+    public List<Session> findByRoomId(Long roomId) {
+        return store.values().stream()
+                .filter(s -> s.getRoomId() != null && s.getRoomId().equals(roomId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Session save(Session session) {
         if (session.getId() == null) {
             session.setId(currentId++);

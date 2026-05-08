@@ -1,5 +1,6 @@
 package hei.school.even_sync_backend.controller;
 
+import hei.school.even_sync_backend.model.Session;
 import hei.school.even_sync_backend.model.Speaker;
 import hei.school.even_sync_backend.service.SpeakerService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,5 +30,9 @@ public class SpeakerController {
         return speakerService.getSpeakerById(id)
                 .orElseThrow(() -> new RuntimeException("Speaker not found: " + id));
     }
-}
 
+    @GetMapping("/{speakerId}/sessions")
+    public List<Session> getSpeakerSessions(@PathVariable Long speakerId) {
+        return speakerService.getSpeakerSessions(speakerId);
+    }
+}

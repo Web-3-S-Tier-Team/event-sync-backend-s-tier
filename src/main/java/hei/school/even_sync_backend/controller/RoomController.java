@@ -1,6 +1,7 @@
 package hei.school.even_sync_backend.controller;
 
 import hei.school.even_sync_backend.model.Room;
+import hei.school.even_sync_backend.model.Session;
 import hei.school.even_sync_backend.service.RoomService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,5 +30,9 @@ public class RoomController {
         return roomService.getRoomById(id)
                 .orElseThrow(() -> new RuntimeException("Room not found: " + id));
     }
-}
 
+    @GetMapping("/{roomId}/sessions")
+    public List<Session> getRoomSessions(@PathVariable Long roomId) {
+        return roomService.getSessionsByRoom(roomId);
+    }
+}

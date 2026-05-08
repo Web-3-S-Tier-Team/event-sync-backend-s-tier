@@ -60,7 +60,7 @@ public class QuestionRepository {
     }
 
     public void deleteQuestion(String questionId) throws SQLException {
-        String sql = "DELETE FROM questions SET upvotes = upvotes + 1 WHERE id = ?";
+        String sql = "DELETE FROM questions WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, questionId);
             stmt.executeUpdate();

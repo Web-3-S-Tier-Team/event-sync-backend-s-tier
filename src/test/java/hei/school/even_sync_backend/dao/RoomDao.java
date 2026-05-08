@@ -1,3 +1,7 @@
+package hei.school.even_sync_backend.dao;
+
+import hei.school.even_sync_backend.model.Room;
+
 import java.sql.*;
 import java.util.*;
 

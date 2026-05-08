@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,5 +32,20 @@ public class SessionService {
         return getSessionsByEventId(eventId).stream()
                 .filter(Session::isLive)
                 .collect(Collectors.toList());
+    }
+
+    public Session getSessionDetail(Long eventId, Long sessionId) {
+
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() ->
+                        new RuntimeException("Session not found: " + sessionId));
+
+        if (!session.getEvent().getId().equals(eventId)) {
+            throw new RuntimeException("Session does not belong to event: " + eventId);
+        }
+
+        liveSessionDetector.updateLiveStatus(session);
+
+        return session;
     }
 }

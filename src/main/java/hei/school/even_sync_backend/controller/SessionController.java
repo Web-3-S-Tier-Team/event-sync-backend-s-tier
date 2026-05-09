@@ -26,4 +26,10 @@ public class SessionController {
     public List<Session> listLiveSessions(@PathVariable Long eventId) {
         return sessionService.getLiveSessionsByEventId(eventId);
     }
+
+    // GET /events/{eventId}/sessions/{sessionId}
+    @GetMapping("/events/{eventId}/sessions/{sessionId}")
+    public Session getSessionDetail(@PathVariable Long eventId, @PathVariable Long sessionId) {
+        return sessionService.getSessionDetail(eventId, sessionId);
+    }
 }

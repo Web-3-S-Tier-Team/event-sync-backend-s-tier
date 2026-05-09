@@ -8,6 +8,7 @@ public interface SessionRepository {
     List<Session> findAll();
     Optional<Session> findById(Long id);
     List<Session> findByEventId(Long eventId);
+    List<Session> findByRoomId(Long roomId);
     Session save(Session session);
     void deleteById(Long id);
 }

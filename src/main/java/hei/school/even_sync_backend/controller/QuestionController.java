@@ -69,11 +69,11 @@ public class QuestionController {
         }
     }
 
-    @PutMapping("session/{idSession}/questions")
-    public ResponseEntity<?> putQuestions (@PathVariable String idSession) {
-        try {
-            List<QuestionDTO> getQuestionInASession = questionService.findQuestion(idSession);
-            return ResponseEntity.status(HttpStatus.OK)
+    @PutMapping("session/{sessionId}/questions/{questionId}/addVote")
+    public ResponseEntity<?> putQuestionsAddVote (@PathVariable String sessionId,@PathVariable String questionId,@RequestHeader String userId, @RequestHeader String userName ) {
+        try {  
+        List<QuestionDTO> getQuestionInASession = questionService.upvoteQuestion(sessionId, questionId, userId, userName);            
+        return ResponseEntity.status(HttpStatus.OK)
             .body(getQuestionInASession);
             
         } catch (Exception e) {
@@ -82,10 +82,10 @@ public class QuestionController {
         }
     }
 
-    @DeleteMapping("session/{id}/questions")
-    public ResponseEntity<?> deleteQuestions (@PathVariable String idSession) {
+    @DeleteMapping("session/{sessionId}/questions/{questionId}")
+    public ResponseEntity<?> deleteQuestions (@PathVariable String sessionId ,@PathVariable String questionId ,@RequestHeader String admin_key ) {
         try {
-            List<QuestionDTO> getQuestionInASession = questionService.findQuestion(idSession);
+            List<QuestionDTO> getQuestionInASession = questionService.deleteQuestion(sessionId, questionId, admin_key);
             return ResponseEntity.status(HttpStatus.OK)
             .body(getQuestionInASession);
             

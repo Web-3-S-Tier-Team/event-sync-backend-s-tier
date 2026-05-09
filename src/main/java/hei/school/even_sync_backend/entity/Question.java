@@ -35,17 +35,11 @@ public class Question {
     
     public Question() {
     }
-
-    // Dans Question.java
-    @Getter
-    private int upvotes; // Remplacez List<User> par int
-
-    public void setUpvotes(int upvotes) {
-        this.upvotes = upvotes;
+     
+    public List<User> getUpvotes (){
+        return vote;
     }
-    public void setUpvotes(List<User> vote) {
+    public void setUpvotes (List<User> vote){
         this.vote = vote;
     }
-
-
 }

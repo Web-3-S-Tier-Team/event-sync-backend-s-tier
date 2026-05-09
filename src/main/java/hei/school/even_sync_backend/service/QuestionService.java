@@ -1,6 +1,5 @@
 package hei.school.even_sync_backend.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import hei.school.even_sync_backend.dto.QuestionDTO;
 import hei.school.even_sync_backend.entity.Question;
+import hei.school.even_sync_backend.entity.User;
 import hei.school.even_sync_backend.exception.BadRequestException;
 import hei.school.even_sync_backend.exception.NotFoundException;
 import hei.school.even_sync_backend.exception.UnauthorizedException;
@@ -66,34 +66,42 @@ public class QuestionService {
         }
     }
 
-    public void upvoteQuestion(String questionId) {
+    public List<QuestionDTO> upvoteQuestion(String sessionId,String questionId, String userId, String userName) {
         try {
             if (questionId == null || questionId.isEmpty()) {
                 throw new BadRequestException("The question id must be defined");
             }
-            questionRepository.upvote(questionId);
+            if (questionRepository.getUserInVoteQuestion(questionId).contains(new User(userId,userName))) {
+                questionRepository.upvote(sessionId, questionId);
+            }else{
+                questionRepository.downvote(sessionId, questionId);
+            } 
+            return mapToDTO(questionRepository.getBySession(sessionId));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void deleteQuestion(String questionId) {
+    public List<QuestionDTO> deleteQuestion(String sessionId,String questionId, String adminKey) {
         try {
             if (questionId == null || questionId.isEmpty()) {
                 throw new BadRequestException("The question id must be defined");
             }
+            if (adminKey==System.getenv("adminKey")) {
+                throw new UnauthorizedException("No access to this methode");
+            }
             questionRepository.deleteQuestion(questionId);
+            return mapToDTO(questionRepository.getBySession(sessionId));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     private List<QuestionDTO> mapToDTO(List<Question> listOfQuestions) {
-        return (List<QuestionDTO>) listOfQuestions.stream()
-                .map(q -> new QuestionDTO(
+        return listOfQuestions.stream().map(q -> new QuestionDTO(
                         q.getNom(),
                         q.getContenu(),
-                        q.getUpvotes() // Supprimez le .size() et le commentaire ici
-                ));
+                        q.getUpvotes().size()
+                )).collect(Collectors.toList());
     }
 }
